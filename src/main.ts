@@ -8,7 +8,7 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Quick Rest API')
     .setDescription(
-      'API for managing users. Allows retrieving all users or searching by email.',
+      'API for list users. Allows retrieving all users or searching by email.',
     )
     .setVersion('1.0')
     .build();

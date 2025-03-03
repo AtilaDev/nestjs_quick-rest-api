@@ -5,31 +5,24 @@ import { PrismaService } from 'src/prisma.service';
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  getUsers() {
-    return this.prisma.user.findMany();
-  }
-
-  getUserById(id: string) {
-    const userByIdFound = this.prisma.user.findUnique({
-      where: { userId: id },
+  async getUsers(limit?: number) {
+    const usersFound = await this.prisma.user.findMany({
+      ...(limit ? { take: limit } : {}),
     });
 
-    if (!userByIdFound) {
-      return new NotFoundException(`User with id ${id} not found`);
-      // return `User with id ${id} not found`;
-    }
-
-    return userByIdFound;
+    return {
+      totalCount: usersFound.length,
+      users: usersFound,
+    };
   }
 
-  getUserByEmail(email: string) {
-    const userByEmailFound = this.prisma.user.findUnique({
+  async getUserByEmail(email: string) {
+    const userByEmailFound = await this.prisma.user.findUnique({
       where: { email },
     });
 
     if (!userByEmailFound) {
       return new NotFoundException(`User with id ${email} not found`);
-      // return `User with email ${email} not found`;
     }
 
     return userByEmailFound;

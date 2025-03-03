@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 
@@ -8,20 +8,18 @@ export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Get all tasks' })
-  @ApiResponse({ status: 200, description: 'Return all tasks' })
-  getUsers() {
-    return this.usersService.getUsers();
+  @ApiOperation({ summary: 'Get all users' })
+  @ApiResponse({ status: 200, description: 'Return all users' })
+  getUsers(@Query('limit') limit?: string) {
+    const limitNumber = limit ? parseInt(limit) : undefined;
+    return this.usersService.getUsers(limitNumber);
   }
-
-  @Get('/:id')
-  getUserById(@Param('id') id: string) {
-    console.log('id controller', id);
-    return this.usersService.getUserById(id);
+  
+  @Get(':email')
+  @ApiOperation({ summary: 'Get user' })
+  @ApiResponse({ status: 200, description: 'Return user by email' })
+  @ApiResponse({ status: 404, description: 'Not found' })
+  getUserByEmail(@Param('email') email: string) {
+    return this.usersService.getUserByEmail(email);
   }
-
-  // @Get('email/:email')
-  // getUserByEmail(@Param('email') email: string) {
-  //   return this.usersService.getUserByEmail(email);
-  // }
 }
