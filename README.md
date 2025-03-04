@@ -63,3 +63,7 @@ npx prisma migrate dev --name init
 ```bash
 npx prisma generate
 ```
+
+### Author
+
+LinkedIn: [Leandro Favre](https://www.linkedin.com/in/leandro-f-7a06a8171/)
