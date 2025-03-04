@@ -41,12 +41,17 @@ export class UsersController {
     return this.usersService.createUser(user);
   }
 
-  @Delete()
+  @Delete('all')
   @ApiResponse({
     status: 200,
     description: 'All users have been successfully deleted',
   })
   deleteDB() {
     return this.usersService.deleteDB();
+  }
+
+  @Delete(':email')
+  deleteUserByEmail(@Param('email') email: string) {
+    return this.usersService.deleteUserByEmail(email);
   }
 }

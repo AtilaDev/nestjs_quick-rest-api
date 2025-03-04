@@ -67,4 +67,23 @@ export class UsersService {
       message: 'All users have been deleted',
     };
   }
+
+  async deleteUserByEmail(email: string) {
+    const userByEmailFound = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!userByEmailFound) {
+      throw new NotFoundException(`User with id ${email} not found`);
+    }
+
+    await this.prisma.user.delete({
+      where: { email },
+    });
+
+    return {
+      status: HttpStatus.OK,
+      message: `User with email ${email} has been deleted`,
+    };
+  }
 }
