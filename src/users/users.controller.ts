@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   Query,
 } from '@nestjs/common';
@@ -53,5 +54,17 @@ export class UsersController {
   @Delete(':email')
   deleteUserByEmail(@Param('email') email: string) {
     return this.usersService.deleteUserByEmail(email);
+  }
+
+  @Patch()
+  @ApiResponse({
+    status: 200,
+    description: 'The user has been successfully updated',
+  })
+  updateUsernameByEmail(
+    @Query('email') email: string,
+    @Query('username') username: string,
+  ) {
+    return this.usersService.updateUsernameByEmail(email, username);
   }
 }

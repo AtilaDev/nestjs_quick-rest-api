@@ -3,6 +3,7 @@ import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { PrismaService } from '../prisma.service';
 import { create } from 'domain';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 
 describe('UsersController', () => {
   let controller: UsersController;
@@ -12,6 +13,8 @@ describe('UsersController', () => {
     getUserByEmail: jest.fn(),
     createUser: jest.fn(),
     deleteDB: jest.fn(),
+    deleteUserByEmail: jest.fn(),
+    updateUsernameByEmail: jest.fn(),
   };
 
   const mockUsers = [
@@ -133,6 +136,104 @@ describe('UsersController', () => {
 
       expect(result).toEqual(expectedResponse);
       expect(mockUsersService.deleteDB).toHaveBeenCalled();
+    });
+  });
+
+  describe('deleteUserByEmail', () => {
+    it('should delete user when email exists', async () => {
+      const email = 'test1@example.com';
+      const expectedResponse = {
+        status: 200,
+        message: `User with email ${email} has been deleted`,
+      };
+
+      mockUsersService.deleteUserByEmail.mockResolvedValue(expectedResponse);
+
+      const result = await controller.deleteUserByEmail(email);
+
+      expect(result).toEqual(expectedResponse);
+      expect(mockUsersService.deleteUserByEmail).toHaveBeenCalledWith(email);
+    });
+
+    it('should throw NotFoundException when email does not exist', async () => {
+      const email = 'nonexistent@example.com';
+      mockUsersService.deleteUserByEmail.mockRejectedValue(
+        new NotFoundException(`User with id ${email} not found`),
+      );
+
+      try {
+        await controller.deleteUserByEmail(email);
+      } catch (error) {
+        expect(error).toBeInstanceOf(NotFoundException);
+        expect(error.message).toBe(`User with id ${email} not found`);
+      }
+
+      expect(mockUsersService.deleteUserByEmail).toHaveBeenCalledWith(email);
+    });
+  });
+
+  describe('updateUsernameByEmail', () => {
+    it('should update username when email exists', async () => {
+      const email = 'test1@example.com';
+      const newUsername = 'newUsername';
+      const updatedUser = {
+        ...mockUsers[0],
+        username: newUsername,
+      };
+
+      const expectedResponse = {
+        status: 200,
+        message: `User with email ${email} has been updated`,
+        updatedUser,
+      };
+
+      mockUsersService.updateUsernameByEmail.mockResolvedValue(
+        expectedResponse,
+      );
+
+      const result = await controller.updateUsernameByEmail(email, newUsername);
+
+      expect(result).toEqual(expectedResponse);
+      expect(mockUsersService.updateUsernameByEmail).toHaveBeenCalledWith(
+        email,
+        newUsername,
+      );
+    });
+
+    it('should throw NotFoundException when email does not exist', async () => {
+      const email = 'nonexistent@example.com';
+      const newUsername = 'newUsername';
+
+      mockUsersService.updateUsernameByEmail.mockRejectedValue(
+        new NotFoundException(`User with id ${email} not found`),
+      );
+
+      try {
+        await controller.updateUsernameByEmail(email, newUsername);
+      } catch (error) {
+        expect(error).toBeInstanceOf(NotFoundException);
+        expect(error.message).toBe(`User with id ${email} not found`);
+      }
+
+      expect(mockUsersService.updateUsernameByEmail).toHaveBeenCalledWith(
+        email,
+        newUsername,
+      );
+    });
+
+    it('should throw BadRequestException when email or username is missing', async () => {
+      mockUsersService.updateUsernameByEmail.mockRejectedValue(
+        new BadRequestException('Email and username are required for update'),
+      );
+
+      try {
+        await controller.updateUsernameByEmail('', '');
+      } catch (error) {
+        expect(error).toBeInstanceOf(BadRequestException);
+        expect(error.message).toBe(
+          'Email and username are required for update',
+        );
+      }
     });
   });
 });

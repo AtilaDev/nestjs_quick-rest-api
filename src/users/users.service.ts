@@ -86,4 +86,36 @@ export class UsersService {
       message: `User with email ${email} has been deleted`,
     };
   }
+
+  async updateUsernameByEmail(email: string, username: string) {
+    if (!email || !username) {
+      throw new BadRequestException('Email and username are required for update');
+    }
+
+    try {
+      const userByEmailFound = await this.prisma.user.findUnique({
+        where: { email },
+      });
+
+      if (!userByEmailFound) {
+        throw new NotFoundException(`User with id ${email} not found`);
+      }
+
+      const updatedUser = await this.prisma.user.update({
+        where: { email },
+        data: { username },
+      });
+
+      return {
+        status: HttpStatus.OK,
+        message: `User with email ${email} has been updated`,
+        updatedUser,
+      };
+    } catch (error) {
+      if (error instanceof NotFoundException || error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new BadRequestException(`Error updating user: ${error.message}`);
+    }
+  }
 }

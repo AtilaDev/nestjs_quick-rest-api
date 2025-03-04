@@ -14,9 +14,7 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Quick Rest API')
-    .setDescription(
-      'API for list users. Allows retrieving all users or searching by email.',
-    )
+    .setDescription('An easy and simple CRUD.')
     .setVersion('1.0')
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
