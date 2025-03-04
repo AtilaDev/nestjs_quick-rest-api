@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { PrismaService } from '../prisma.service';
+import { create } from 'domain';
 
 describe('UsersController', () => {
   let controller: UsersController;
@@ -9,6 +10,8 @@ describe('UsersController', () => {
   const mockUsersService = {
     getUsers: jest.fn(),
     getUserByEmail: jest.fn(),
+    createUser: jest.fn(),
+    deleteDB: jest.fn(),
   };
 
   const mockUsers = [
@@ -67,6 +70,7 @@ describe('UsersController', () => {
       expect(mockUsersService.getUsers).toHaveBeenCalledWith(5);
     });
   });
+
   describe('getUserByEmail', () => {
     it('should return a user when email exists', async () => {
       const email = 'test1@example.com';
@@ -86,6 +90,49 @@ describe('UsersController', () => {
 
       expect(result).toBeNull();
       expect(mockUsersService.getUserByEmail).toHaveBeenCalledWith(email);
+    });
+  });
+
+  describe('createUser', () => {
+    it('should create a new user into db', async () => {
+      const mockCreateUserDto = {
+        username: 'test1',
+        email: 'test1@example.com',
+        avatar: 'avatar1.jpg',
+        birthdate: new Date(),
+      };
+
+      const mockCreatedUser = {
+        userId: '1',
+        ...mockCreateUserDto,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      mockUsersService.createUser.mockResolvedValue(mockCreatedUser);
+
+      const result = await controller.createUser(mockCreateUserDto);
+
+      expect(result).toEqual(mockCreatedUser);
+      expect(mockUsersService.createUser).toHaveBeenCalledWith(
+        mockCreateUserDto,
+      );
+    });
+  });
+
+  describe('should remove entire db', () => {
+    it('should remove all users from db', async () => {
+      const expectedResponse = {
+        status: 200,
+        message: 'All users have been deleted',
+      };
+
+      mockUsersService.deleteDB.mockResolvedValue(expectedResponse);
+
+      const result = await controller.deleteDB();
+
+      expect(result).toEqual(expectedResponse);
+      expect(mockUsersService.deleteDB).toHaveBeenCalled();
     });
   });
 });
