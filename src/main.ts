@@ -14,7 +14,9 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Quick Rest API')
-    .setDescription('An easy and simple CRUD.')
+    .setDescription(
+      'A RESTful API built with NestJS for managing user data with complete CRUD operations.',
+    )
     .setVersion('1.0')
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);

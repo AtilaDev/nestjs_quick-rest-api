@@ -34,6 +34,7 @@ export class UsersController {
   }
 
   @Post()
+  @ApiOperation({ summary: 'Create new user' })
   @ApiResponse({
     status: 200,
     description: 'The user has been successfully created',
@@ -43,6 +44,7 @@ export class UsersController {
   }
 
   @Delete('all')
+  @ApiOperation({ summary: 'Delete entire db' })
   @ApiResponse({
     status: 200,
     description: 'All users have been successfully deleted',
@@ -52,11 +54,17 @@ export class UsersController {
   }
 
   @Delete(':email')
+  @ApiOperation({ summary: 'Delete an user by email' })
+  @ApiResponse({
+    status: 200,
+    description: 'The user has been deleted',
+  })
   deleteUserByEmail(@Param('email') email: string) {
     return this.usersService.deleteUserByEmail(email);
   }
 
   @Patch()
+  @ApiOperation({ summary: 'Update user by email' })
   @ApiResponse({
     status: 200,
     description: 'The user has been successfully updated',
