@@ -16,11 +16,11 @@ async function main() {
   }));
 
   // Create users in database
-  for (const user of users) {
-    await prisma.user.create({
-      data: user,
-    });
-  }
+  // for (const user of users) {
+  //   await prisma.user.create({
+  //     data: user,
+  //   });
+  // }
 
   console.log('Successfully seeded 100 users');
 }
